@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>AssetPayments payment form example</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="form.min.css" rel="stylesheet">
+<link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300' rel='stylesheet' type='text/css'>
+</head>
+<body>
+
+<div id="iframeform">
+	<div id="content">
+		<div id="Checkout" class="inline">
+			<div class="close fa fa-times-circle"></div>
+			<h1>Оплатить счет</h1>
+			<div class="card-row">
+				<span class="visa"></span>
+				<span class="mastercard"></span>
+				<span class="amex"></span>
+				<span class="discover"></span>
+			</div>
+		<form name="assetpayments" method="post" action="asset.api.php">		<!-- Путь к php файлу -->
+			<div class="form-group">
+				<div class="input-container">
+					<select id="SecurityCode" name="form_processingid" class="form-control selectmethods minimal" required> <!-- Выбор платежного методаб можно указать один (см. пример с кнопкой) -->
+						<option value="233">Банковская карта Visa/MasterCard</option>
+					</select>
+				</div>
+			</div>
+			<div class="form-group">
+				<input id="Name_Surname" name="form_name" class="form-control" type="text" maxlength="255" placeholder="Имя Фамилия" oninvalid="this.setCustomValidity('Введите Имя и Фамилию')" oninput="setCustomValidity('')" required>
+			</div>
+			<div class="form-group">
+				<input id="Phone_number" name="form_phone" class="form-control" type="text" maxlength="255" placeholder="Номер телефона" onkeydown="return ( event.ctrlKey || event.altKey
+                    || (47<event.keyCode && event.keyCode<58 && event.shiftKey==false)
+                    || (95<event.keyCode && event.keyCode<106)
+                    || (event.keyCode==8) || (event.keyCode==9)
+                    || (event.keyCode>34 && event.keyCode<40)
+                    || (event.keyCode==46) )" oninvalid="this.setCustomValidity('Введите номер телефона')" oninput="setCustomValidity('')" required>
+			</div>
+			<div class="form-group">
+				<input id="Email" name="form_email" class="form-control" type="email" maxlength="255" placeholder="Email" oninvalid="this.setCustomValidity('Введите правильно Email')" oninput="setCustomValidity('')" required>
+			</div>
+			<div class="form-group">
+				<input id="Address" name="form_address" class="form-control" type="text" maxlength="255" placeholder="Адрес" oninvalid="this.setCustomValidity('Введите адрес')" oninput="setCustomValidity('')" required>
+			</div>
+			<div class="form-group">
+				<textarea id="comment" name="form_description" class="form-control form-control-height" maxlength="255" placeholder="Назначение платежа" oninvalid="this.setCustomValidity('Введите назначение платежа')" oninput="setCustomValidity('')" required></textarea>
+			</div>
+			<div class="expiry-date-group form-group">
+				<label for="ExpiryDate">Сумма счета</label>
+				<input id="ExpiryDate" name="form_sum" class="form-control" type="text" onkeydown="return ( event.ctrlKey || event.altKey
+                    || (47<event.keyCode && event.keyCode<58 && event.shiftKey==false)
+                    || (95<event.keyCode && event.keyCode<106)
+                    || (event.keyCode==8) || (event.keyCode==9)
+                    || (event.keyCode>34 && event.keyCode<40)
+                    || (event.keyCode==46) )" oninvalid="this.setCustomValidity('Введите сумму счета')" oninput="setCustomValidity('')" required>
+			</div>
+			<div class="security-code-group form-group">
+				<label for="SecurityCode">Валюта</label>
+				<div class="input-container">
+					<select id="SecurityCode" name="form_currency" class="form-control selectexp minimal" required>
+						<option value="UAH">ГРН</option>
+						<option value="USD">USD</option>
+						<option value="EUR">EUR</option>
+						<option value="CAD">CAD</option>
+						<option value="RUB">РУБ</option>
+						<option value="BYN">BYN</option>
+						<option value="KZT">KZT</option>
+					</select>
+				</div>
+			</div>
+			<!--**Send to Email**
+			<div class="form-group">
+				<input type="checkbox" name="checkboxG1" class="css-checkbox"> <label for="checkboxG1" class="css-label">Отправить счет по Email</label>
+			</div>-->
+			<button id="PayButton" class="btn btn-block btn-success submit-button" type="submit">
+			<span class="submit-button-lock" ></span>
+			<span class="align-middle">Оплатить счет</span>
+			</button>
+			<div class="powered">
+                <a href="https://assetpayments.com/" target="_blank">
+                <img class="logos" src="apbtn.jpg" />
+                </a>
+			</div>
+				<!--Processing method.
+				    Allowing values are (USD example)
+					PASS - PaymentForm=USD, Processing=USD
+					CONV - PaymentForm=UAH, Processing=UAH
+					ALTER - PaymentForm=USD, Processing=UAH
+				-->
+				<input type="hidden" name="altcurrency" value="PASS" />
+				<!--Zero amount checker-->
+				<input type="hidden" name="form_check" value="yes" />
+		</form>
+		</div>
+	</div>
+</div>
+
+</body>
+</html>
