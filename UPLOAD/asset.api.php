@@ -4,9 +4,8 @@
 
 	//Processing Details
 	$asset_key = '03e5515f-7cd8-49ce-9284-5d78ff1390d9';
-	$processing_method = 'redirect'; // allowed values redirect/iframe	
-	$allowed_processings = '[' + $_POST['form_processingid'] + ']';
-	$processing_id = $_POST['form_processingid'];
+	$processing_method = 'redirect';
+	$processing_id = 1;
 	$template_id = 0;
 	
 	//HTML form details
@@ -60,16 +59,26 @@
 	//var_dump($option);
 	$data = base64_encode( json_encode($option) );
 
-	//SEND POST WITH CURL
-	$url = 'https://assetpayments.us/checkout/pay';
-	$fields = ['data' => $data];
-	$fields_string = http_build_query($fields);
-
-	$ch = curl_init();
-	curl_setopt($ch,CURLOPT_URL, $url);
-	curl_setopt($ch,CURLOPT_POST, true);
-	curl_setopt($ch,CURLOPT_POSTFIELDS, $fields_string);
-	curl_setopt($ch,CURLOPT_RETURNTRANSFER, true); 
-	$result = curl_exec($ch);
-	echo $result;
+	if ($processing_method == 'iframe'){
+		$url = 'https://assetpayments.us/checkout/pay';
+		$fields = ['data' => $data];
+		$fields_string = http_build_query($fields);
+		$ch = curl_init();
+		curl_setopt($ch,CURLOPT_URL, $url);
+		curl_setopt($ch,CURLOPT_POST, true);
+		curl_setopt($ch,CURLOPT_POSTFIELDS, $fields_string);
+		curl_setopt($ch,CURLOPT_RETURNTRANSFER, true); 
+		$result = curl_exec($ch);
+		echo $result;
+	} else {
+	 	echo sprintf('
+            	<form method="POST" id="checkout" action="https://assetpayments.us/checkout/pay" accept-charset="utf-8">
+                <input type="hidden" name="data" value='.$data.' />                
+            	</form>');	
+		echo "<script type=\"text/javascript\"> 
+                window.onload=function(){
+                    document.forms['checkout'].submit();
+                }
+		</script>";
+	}
 ?>
