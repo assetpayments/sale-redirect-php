@@ -1,13 +1,26 @@
 <?php 
 
 	header("Content-Type: text/html; charset=utf-8");
-		
-	$json = json_decode($_POST['order_json'], true);	
-		
-	//****Get Insales data mandatory for callback request signature***//		
-	$processing_id = 1635;
-	$allowed_processings = [1635];
-	$asset_key = '49302ec8-5a1c-4c30-a788-5b1b00687e20';
+
+	//Catch HTML form data 	
+	$asset_key = '03e5515f-7cd8-49ce-9284-5d78ff1390d9';
+
+	$processing_method = 'redirect';
+	if ($processing_method = 'redirect'){
+		$allowed_processings = '[' + $_POST['form_processingid'] + ']';
+	}else {
+		$processing_id = $_POST['form_processingid'];
+	}	
+
+	$form_customer_name = $_POST['Name_Surname'];
+	$form_phone = '+'.$_POST['form_phone'];
+	$form_email = $_POST['form_email'];
+	$form_address = $_POST['form_address'];
+	$form_country = 'UKR';
+	$form_order_id = '12345';	
+	$form_description = $_POST['form_description'];
+	$form_sum = number_format($_POST['form_sum'], 2, '.', '');	
+	$currency = $_POST['form_currency'];	
 
 	$get_source = parse_url(getenv("HTTP_REFERER"));
 	$source_domain = $get_source['host'];
@@ -21,63 +34,35 @@
 
 	//****Request mandatory variables****//	
 	$option['TemplateId'] = 0;
-	$option['ProcessingID'] = $processing_id;
+	$option['ProcessingId'] = $processing_id;
 	$option['AllowedProcessings'] = $allowed_processings;
-	$option['CustomMerchantInfo'] = 'comments';
-	$option['MerchantInternalOrderId'] = '12345';
+	$option['CustomMerchantInfo'] = $form_description;
+	$option['MerchantInternalOrderId'] = $form_order_id;
 	$option['StatusURL'] = 'status';	
 	$option['ReturnURL'] = 'return';
 	$option['AssetPaymentsKey'] = $asset_key;
-	$option['Amount'] = 100;	
+	$option['Amount'] = $form_sum;	
 	$option['Currency'] = 'UAH';
 	$option['IpAddress'] = $ip;
 		
 	//****Customer details and address****//
-	$option['FirstName'] = 'Name';
-        	$option['Email'] = 'test@test.com';
-        	$option['Phone'] = '555666777';
-        	$option['Address'] = 'addrr';
-	$option['CountryISO'] = 'UKR';
-		
+	$option['FirstName'] = $form_customer_name;
+        $option['Email'] = $form_email;
+        $option['Phone'] = $form_phone;
+        $option['Address'] = $form_address;
+	$option['CountryISO'] = $form_country;	
 		
 	//****Cart details****//
-	//for($i = 0, $size = count($json['order_lines']); $i < $size; ++$i) {
-	//   $option['Products'][$i]['ProductId'] = $json['order_lines'][$i]['product_id'];
-	//   $option['Products'][$i]['ProductName'] = $json['order_lines'][$i]['title'];
-	//   $option['Products'][$i]['ProductPrice'] = $json['order_lines'][$i]['sale_price'];
-	//   $option['Products'][$i]['ProductItemsNum'] = $json['order_lines'][$i]['quantity'];
-	//   $option['Products'][$i]['ImageUrl'] = 'https://assetpayments.com/dist/css/images/product.png';   
-	//}
-		
-	//****Delivery method****//
-	//$option['Products'][] = array(
-	//'ProductId' => 1,
-	//'ProductName' => $json['delivery_description'],
-	//'ProductPrice' => $json['delivery_price'],
-	//'ProductItemsNum' => 1,
-	//'ImageUrl' => 'https://assetpayments.com/dist/css/images/delivery.png',
-	//);
+   	$option['Products'][$i]['ProductId'] = 'No ID';
+	$option['Products'][$i]['ProductName'] = 'Order #' + $form_order_id;
+	$option['Products'][$i]['ProductPrice'] = $form_sum;
+	$option['Products'][$i]['ProductItemsNum'] = 1;
+	$option['Products'][$i]['ImageUrl'] = 'https://assetpayments.com/dist/css/images/product.png';   
 		
 	//var_dump($option);
-
-
 	$data = base64_encode( json_encode($option) );
 
-	//SEND POST WITH JS
-
-        	//echo sprintf('
-            	//<form method="POST" id="checkout" action="https://assetpayments.us/checkout/pay" accept-charset="utf-8">
-                	//<input type="hidden" name="data" value='.$data.' />                
-            	//</form>'
-        	//);
-	//echo "<script type=\"text/javascript\"> 
-                	//window.onload=function(){
-                    	//document.forms['checkout'].submit();
-                	//}
-	//</script>";
-
 	//SEND POST WITH CURL
-
 	$url = 'https://assetpayments.us/checkout/pay';
 	$fields = ['data' => $data];
 	$fields_string = http_build_query($fields);
@@ -89,5 +74,4 @@
 	curl_setopt($ch,CURLOPT_RETURNTRANSFER, true); 
 	$result = curl_exec($ch);
 	echo $result;
-
 ?>
