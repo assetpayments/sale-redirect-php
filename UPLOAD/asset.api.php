@@ -2,16 +2,14 @@
 
 	header("Content-Type: text/html; charset=utf-8");
 
-	//Catch HTML form data 	
+	//Processing Details
 	$asset_key = '03e5515f-7cd8-49ce-9284-5d78ff1390d9';
-
-	$processing_method = 'redirect';
-	if ($processing_method = 'redirect'){
-		$allowed_processings = '[' + $_POST['form_processingid'] + ']';
-	}else {
-		$processing_id = $_POST['form_processingid'];
-	}	
-
+	$processing_method = 'redirect'; // allowed values redirect/iframe	
+	$allowed_processings = '[' + $_POST['form_processingid'] + ']'
+	$processing_id = $_POST['form_processingid'];
+	$template_id = 0;
+	
+	//HTML form details
 	$form_customer_name = $_POST['Name_Surname'];
 	$form_phone = '+'.$_POST['form_phone'];
 	$form_email = $_POST['form_email'];
@@ -20,7 +18,7 @@
 	$form_order_id = '12345';	
 	$form_description = $_POST['form_description'];
 	$form_sum = number_format($_POST['form_sum'], 2, '.', '');	
-	$currency = $_POST['form_currency'];	
+	$form_currency = $_POST['form_currency'];	
 
 	$get_source = parse_url(getenv("HTTP_REFERER"));
 	$source_domain = $get_source['host'];
@@ -32,8 +30,8 @@
 		  getenv('HTTP_FORWARDED')?:
 		  getenv('REMOTE_ADDR');
 
-	//****Request mandatory variables****//	
-	$option['TemplateId'] = 0;
+	//Required variables	
+	$option['TemplateId'] = $template_id;
 	$option['ProcessingId'] = $processing_id;
 	$option['AllowedProcessings'] = $allowed_processings;
 	$option['CustomMerchantInfo'] = $form_description;
@@ -42,7 +40,7 @@
 	$option['ReturnURL'] = 'return';
 	$option['AssetPaymentsKey'] = $asset_key;
 	$option['Amount'] = $form_sum;	
-	$option['Currency'] = 'UAH';
+	$option['Currency'] = $form_currency;
 	$option['IpAddress'] = $ip;
 		
 	//****Customer details and address****//
@@ -53,7 +51,7 @@
 	$option['CountryISO'] = $form_country;	
 		
 	//****Cart details****//
-   	$option['Products'][$i]['ProductId'] = 'No ID';
+   	$option['Products'][$i]['ProductId'] = $form_order_id;
 	$option['Products'][$i]['ProductName'] = 'Order #' + $form_order_id;
 	$option['Products'][$i]['ProductPrice'] = $form_sum;
 	$option['Products'][$i]['ProductItemsNum'] = 1;
