@@ -5,7 +5,7 @@
 	//Processing Details
 	$asset_key = '03e5515f-7cd8-49ce-9284-5d78ff1390d9';
 	$processing_method = 'redirect'; // allowed values redirect/iframe	
-	$allowed_processings = '[' + $_POST['form_processingid'] + ']'
+	$allowed_processings = '[' + $_POST['form_processingid'] + ']';
 	$processing_id = $_POST['form_processingid'];
 	$template_id = 0;
 	
