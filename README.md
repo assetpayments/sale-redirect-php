@@ -1,4 +1,4 @@
-## Метод оплаты Sale Redirect для PHP
+## Метод оплаты Sale Iframe/Redirect для PHP
 ### Файлы:
 
 * apbtn.jpg - Логотип Asset Payments
@@ -11,7 +11,7 @@
 * Укажите в обработчике (asset.api.php) свой ID (строка 101), SecretKey (строка 102) и ProcessingID (строка 119)
 * Откройте в редакторе Вашей CMS страницу на которую требуется вставить форму
  
- ## PHP Sale Redirect payment request
+ ## PHP Sale Iframe/Redirect payment request
 ### Files:
 
 * apbtn.jpg - Asset Payments logo
