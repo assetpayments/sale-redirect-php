@@ -50,11 +50,11 @@
 	$option['CountryISO'] = $form_country;	
 		
 	//****Cart details****//
-   	//$option['Products'][$i]['ProductId'] = $form_order_id;
-	//$option['Products'][$i]['ProductName'] = 'Order #' + $form_order_id;
-	//$option['Products'][$i]['ProductPrice'] = $form_sum;
-	//$option['Products'][$i]['ProductItemsNum'] = 1;
-	//$option['Products'][$i]['ImageUrl'] = 'https://assetpayments.com/dist/css/images/product.png';   
+   	$option['Products'][0]['ProductId'] = $form_order_id;
+	$option['Products'][0]['ProductName'] = 'Order #' + $form_order_id;
+	$option['Products'][0]['ProductPrice'] = $form_sum;
+	$option['Products'][0]['ProductItemsNum'] = 1;
+	$option['Products'][0]['ImageUrl'] = 'https://assetpayments.com/dist/css/images/product.png';   
 		
 	//var_dump($option);
 	$data = base64_encode( json_encode($option) );
