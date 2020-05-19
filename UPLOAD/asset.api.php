@@ -55,23 +55,33 @@
 	$option['Products'][0]['ProductPrice'] = $form_sum;
 	$option['Products'][0]['ProductItemsNum'] = 1;
 	$option['Products'][0]['ImageUrl'] = 'https://assetpayments.com/dist/css/images/product.png';   
-		
-	//var_dump($option);
-	$data = base64_encode( json_encode($option) );
 
 	if ($processing_method == 'iframe'){
-		$url = 'https://assetpayments.us/checkout/pay';
-		$fields = ['data' => $data];
-		$fields_string = http_build_query($fields);
-		$ch = curl_init();
-		curl_setopt($ch,CURLOPT_URL, $url);
-		curl_setopt($ch,CURLOPT_POST, true);
-		curl_setopt($ch,CURLOPT_POSTFIELDS, $fields_string);
-		curl_setopt($ch,CURLOPT_RETURNTRANSFER, true); 
-		$result = curl_exec($ch);
-		echo $result;
+		$option['OperationMode'] = 'Iframe';	
+		$option['TransactionType'] = 'Sale';		
+		$data = json_encode($option);
+		$url = 'https://api.assetpayments.us/api/payment/create';
+		$curl = curl_init($url);
+		curl_setopt($curl, CURLOPT_HEADER, false);
+		curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($curl, CURLOPT_HTTPHEADER, array("Content-type: application/json"));
+		curl_setopt($curl, CURLOPT_POST, true);
+		curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
+
+		$json_response = curl_exec($curl);
+		$status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+		if ( $status == 201 ) {
+			die("Error: call to URL $url failed with status $status, response $json_response, curl_error " . curl_error($curl) . ", curl_errno " . curl_errno($curl));
+		}
+		curl_close($curl);
+		
+		$response = json_decode($json_response, true);
+		$externalForm  = $response['htmlIframeForm']; 
+		$OrderId = $response['transactionId']; 
+		echo $externalForm;
 	} else {
-	 	echo sprintf('
+	 	$data = base64_encode( json_encode($option) );
+		echo sprintf('
             	<form method="POST" id="checkout" action="https://assetpayments.us/checkout/pay" accept-charset="utf-8">
                 <input type="hidden" name="data" value='.$data.' />                
             	</form>');	
