@@ -56,7 +56,7 @@
 	$option['Products'][0]['ProductItemsNum'] = 1;
 	$option['Products'][0]['ImageUrl'] = 'https://assetpayments.com/dist/css/images/product.png';   
 
-	if ($processing_method == 'iframe'){
+	if ($processing_method == 'iframe'){		
 		$option['OperationMode'] = 'Iframe';	
 		$option['TransactionType'] = 'Sale';		
 		$data = json_encode($option);
@@ -78,8 +78,10 @@
 		$response = json_decode($json_response, true);
 		$externalForm  = $response['htmlIframeForm']; 
 		$OrderId = $response['transactionId']; 
-		echo $externalForm;
-	} else {
+		echo $externalForm;		
+	} 
+	
+	if ($processing_method == 'redirect') {		
 	 	$data = base64_encode( json_encode($option) );
 		echo sprintf('
             	<form method="POST" id="checkout" action="https://assetpayments.us/checkout/pay" accept-charset="utf-8">
@@ -89,6 +91,32 @@
                 window.onload=function(){
                     document.forms['checkout'].submit();
                 }
-		</script>";
-	}
+		</script>";		
+	}	
+	
+	if ($processing_method == 'invoice'){		
+		$option['CustomerNotification'] = 'false';	
+		$option['AllowedProcessings'] = [];	
+		$option['CustomerEmail'] = $form_email;		
+		$data = json_encode($option);
+		$url = 'https://api.assetpayments.us/api/merchant/invoice/create';
+		$curl = curl_init($url);
+		curl_setopt($curl, CURLOPT_HEADER, false);
+		curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($curl, CURLOPT_HTTPHEADER, array("Content-type: application/json"));
+		curl_setopt($curl, CURLOPT_POST, true);
+		curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
+
+		$json_response = curl_exec($curl);
+		$status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+		if ( $status == 201 ) {
+			die("Error: call to URL $url failed with status $status, response $json_response, curl_error " . curl_error($curl) . ", curl_errno " . curl_errno($curl));
+		}
+		curl_close($curl);
+		
+		$response = json_decode($json_response, true);
+		$invoiceLink  = $response['invoicePaymentLink']; 
+		header('Location:'.$invoiceLink); 
+		echo $invoiceLink;		
+	} 
 ?>
