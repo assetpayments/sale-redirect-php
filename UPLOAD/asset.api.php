@@ -4,7 +4,7 @@
 
 	//Processing Details
 	$asset_key = '03e5515f-7cd8-49ce-9284-5d78ff1390d9';
-	$processing_method = 'redirect'; //Allowed values iframe or redirect
+	$processing_method = 'redirect'; //Allowed values iframe, redirect or invoice
 	$processing_id = 1;
 	$template_id = 0;
 	
