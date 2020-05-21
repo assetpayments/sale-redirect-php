@@ -4,6 +4,7 @@
 
 	//Processing Details
 	$asset_key = '03e5515f-7cd8-49ce-9284-5d78ff1390d9';
+	$asset_secret = 'b6e6b617-88b0-4102-8f8f-704327fa6d9f';
 	$processing_method = 'redirect'; //Allowed values iframe, redirect or invoice
 	$processing_id = 1;
 	$template_id = 0;
@@ -119,4 +120,27 @@
 		header('Location:'.$invoiceLink); 
 		echo $invoiceLink;		
 	} 
+
+	public function callback() {
+		$json = json_decode(file_get_contents('php://input'), true);
+
+		$key = $asset_key;
+		$secret = $asset_secret;
+		$transactionId = $json['Payment']['TransactionId'];
+		$signature = $json['Payment']['Signature'];
+		$order_id = $json['Order']['OrderId'];
+		$status = $json['Payment']['StatusCode'];
+
+		$requestSign =$key.':'.$transactionId.':'.strtoupper($secret);
+		$sign = hash_hmac('md5',$requestSign,$secret);
+		//Successful payment
+		if ($status == 1 && $sign == $signature) {			
+		} 
+		//Failed payment
+		if ($status == 2 && $sign == $signature) {			
+		}
+		//Authorized (holded) payment
+		if ($status == 4 && $sign == $signature) {			
+		} 
+	}
 ?>
