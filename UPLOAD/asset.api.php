@@ -7,6 +7,7 @@
 	$asset_secret = 'b6e6b617-88b0-4102-8f8f-704327fa6d9f';
 	$processing_method = 'redirect'; //Allowed values iframe, redirect or invoice
 	$processing_id = 1;
+	$allowed_processings = [1];
 	$template_id = 0;
 	
 	//HTML form details
@@ -42,13 +43,13 @@
 	$option['Amount'] = $form_sum;	
 	$option['Currency'] = $form_currency;
 	$option['IpAddress'] = $ip;
+	$option['CountryISO'] = $form_country;	
 		
 	//****Customer details and address****//
 	$option['FirstName'] = $form_customer_name;
         $option['Email'] = $form_email;
         $option['Phone'] = $form_phone;
         $option['Address'] = $form_address;
-	$option['CountryISO'] = $form_country;	
 		
 	//****Cart details****//
    	$option['Products'][0]['ProductId'] = $form_order_id;
