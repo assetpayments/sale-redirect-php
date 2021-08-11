@@ -122,6 +122,94 @@
 		echo $invoiceLink;		
 	} 
 
+	if ($processing_method == 'token'){
+
+		$option['OperationMode'] = 'Iframe';
+		$option['TransactionType'] = 'Token';
+		$data = json_encode($option);
+		$url = 'https://api.assetpayments.us/api/payment/create';
+		$curl = curl_init($url);
+		curl_setopt($curl, CURLOPT_HEADER, false);
+		curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($curl, CURLOPT_HTTPHEADER, array("Content-type: application/json"));
+		curl_setopt($curl, CURLOPT_POST, true);
+		curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
+
+		$json_response = curl_exec($curl);
+		$status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+		if ( $status == 201 ) {
+			die("Error: call to URL $url failed with status $status, response $json_response, curl_error " . curl_error($curl) . ", curl_errno " . curl_errno($curl));
+		}
+		curl_close($curl);
+
+		$response = json_decode($json_response, true);
+		print_r ($response);
+		echo '<br/><br/>';
+		$transactionId = $response[transactionId];
+
+		if (!empty($transactionId) || $transactionId != 0){
+			$requestSign =$asset_key.':'.$transactionId.':'.strtoupper($secret);
+			$sign = hash_hmac('md5',$requestSign,$secret);
+
+			$option['AssetPaymentsKey'] = $asset_key;
+			$option['TransactionId'] = $transactionId;
+			$option['CardToken'] = '3f247fb3-e78f-4b6e-98c1-8aaea4694d';
+			$option['Signature'] = $sign;
+
+			$data = json_encode($option);
+			$url = 'https://api.assetpayments.us/api/payment/token';
+			$curl = curl_init($url);
+			curl_setopt($curl, CURLOPT_HEADER, false);
+			curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+			curl_setopt($curl, CURLOPT_HTTPHEADER, array("Content-type: application/json"));
+			curl_setopt($curl, CURLOPT_POST, true);
+			curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
+
+			$json_response = curl_exec($curl);
+			$status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+			if ( $status == 201 ) {
+				die("Error: call to URL $url failed with status $status, response $json_response, curl_error " . curl_error($curl) . ", curl_errno " . curl_errno($curl));
+			}
+			curl_close($curl);
+
+			$response = json_decode($json_response, true);
+			print_r ('transactionState = ' . $response[transactionState] . '<br/>');
+			print_r ('transactionStateCode = ' . $response[transactionStateCode] . '<br/>');
+			print_r ('errorCode = ' . $response[errorCode] . '<br/>');
+			print_r ('responseMessage = ' . $response[responseMessage] . '<br/>');
+			print_r ('transactionId = ' . $response[transactionId] . '<br/>');
+		}
+
+	}
+
+	if ($processing_method == 'applepay'){
+
+		$option['OperationMode'] = 'Iframe';
+		$option['TransactionType'] = 'ApplePay';
+
+		$data = json_encode($option);
+		$url = 'https://api.assetpayments.us/api/payment/create';
+		$curl = curl_init($url);
+		curl_setopt($curl, CURLOPT_HEADER, false);
+		curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($curl, CURLOPT_HTTPHEADER, array("Content-type: application/json"));
+		curl_setopt($curl, CURLOPT_POST, true);
+		curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
+
+		$json_response = curl_exec($curl);
+		$status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+		if ( $status == 201 ) {
+			die("Error: call to URL $url failed with status $status, response $json_response, curl_error " . curl_error($curl) . ", curl_errno " . curl_errno($curl));
+		}
+		curl_close($curl);
+
+		$response = json_decode($json_response, true);
+		$externalForm  = $response['htmlIframeForm'];
+		$OrderId = $response['transactionId'];
+		echo $externalForm;
+
+	}
+
 	public function callback() {
 		$json = json_decode(file_get_contents('php://input'), true);
 
